@@ -1,46 +1,46 @@
-// Definição dos pinos
-const int LED_GREEN = 2; // LED do botão verde
-const int LED_RED = 3;   // LED do botão vermelho
-const int LED_BLUE = 4;  // LED do botão azul
-const int LED_YELLOW = 5;// LED do botão amarelo
+// Pin's definition
+const int LED_GREEN = 2; // Green button's LED
+const int LED_RED = 3;   // Red button's LED
+const int LED_BLUE = 4;  // Blue button's LED
+const int LED_YELLOW = 5;// Yellow button's LED
 
-const int BTN_GREEN = 6; // Botão verde
-const int BTN_RED = 7;   // Botão vermelho
-const int BTN_BLUE = 8;  // Botão azul
-const int BTN_YELLOW = 10; // Botão amarelo
+const int BTN_GREEN = 6; // Green button
+const int BTN_RED = 7;   // Red button
+const int BTN_BLUE = 8;  // Blue button
+const int BTN_YELLOW = 10; // Yellow Button
 
 const int BUZZER = 9;
 
-// Variáveis do jogo
-int sequence[100]; // Sequência de cores (até 100 passos)
-int sequenceLength = 0; // Tamanho atual da sequência
+// Game's vars
+int sequence[100]; // colors sequence (100 steps)
+int sequenceLength = 0; // current sequence lenght
 bool playerTurn = false;
 
 void setup() {
-  // Configuração dos pinos dos LEDs
+  // LED Pin's configuration
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_YELLOW, OUTPUT);
 
-  // Configuração dos pinos dos botões
+  // Button Pin's configuration
   pinMode(BTN_GREEN, INPUT_PULLUP);
   pinMode(BTN_RED, INPUT_PULLUP);
   pinMode(BTN_BLUE, INPUT_PULLUP);
   pinMode(BTN_YELLOW, INPUT_PULLUP);
 
-  // Configuração do buzzer
+  // buzzer config
   pinMode(BUZZER, OUTPUT);
 
   Serial.begin(9600);
-  randomSeed(analogRead(0)); // Inicializa o gerador de números aleatórios
+  randomSeed(analogRead(0)); // start the random number generation
 }
 
 void loop() {
-  // Mostra a sequência ao jogador
+  //Play the sequence to the player
   playSequence();
 
-  // Espera a resposta do jogador
+  // Wait Player's response
   if (!playerTurn) {
     playerTurn = true;
     if (!playerInput()) {
@@ -49,26 +49,26 @@ void loop() {
     playerTurn = false;
   }
 
-  // Adiciona um novo passo à sequência
+  // Add a new step to the sequence
   addStep();
 }
 
-// Adiciona um novo passo à sequência
+// Add a new step to the sequence
 void addStep() {
-  sequence[sequenceLength] = random(0, 4); // Gera um número aleatório entre 0 e 3
+  sequence[sequenceLength] = random(0, 4); // Generate a random number between 0 and 3
   sequenceLength++;
 }
 
-// Mostra a sequência de luzes e sons
+//  Play the sequence of led and sound
 void playSequence() {
   for (int i = 0; i < sequenceLength; i++) {
     playColor(sequence[i]);
-    delay(500);
+    delay(500);//delay to understand the sequence
   }
-  delay(1000); // Pequena pausa antes da jogada do jogador
+  delay(1000); // Pause before the player's turn
 }
 
-// Reproduz uma cor com som e luz
+// Play a sound and a color
 void playColor(int color) {
   switch (color) {
     case 0:
@@ -98,18 +98,18 @@ void playColor(int color) {
   }
 }
 
-// Captura a entrada do jogador
+// Get the player input
 bool playerInput() {
   for (int i = 0; i < sequenceLength; i++) {
     int playerMove = waitForButtonPress();
     if (playerMove != sequence[i]) {
-      return false; // Resposta errada
+      return false; // Wrong answer
     }
   }
-  return true; // Jogador acertou toda a sequência
+  return true; // Player made the correct sequence
 }
 
-// Espera até que o jogador pressione um botão
+// Wait until player press a button
 int waitForButtonPress() {
   while (true) {
     if (digitalRead(BTN_GREEN) == LOW) return 0;
@@ -119,12 +119,12 @@ int waitForButtonPress() {
   }
 }
 
-// Finaliza o jogo em caso de erro
+// End the game if there's a error
 void gameOver() {
   for (int i = 0; i < 3; i++) {
     tone(BUZZER, 200, 500);
     delay(500);
   }
-  sequenceLength = 0; // Reseta o jogo
-  addStep();          // Adiciona o primeiro passo para recomeçar
+  sequenceLength = 0; // Reset the game
+  addStep();          // Add the first step to restart the game
 }
